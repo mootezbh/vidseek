@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------
+   VidSeek design tokens — dark neo-brutalist.
+   Thick borders, hard offset shadows, no gradients, no blur.
+   --------------------------------------------------------------- */
+
+@theme {
+  --color-void: #0a0a0b;
+  --color-ink: #101013;
+  --color-panel: #16161a;
+  --color-panel-hi: #1e1e24;
+  --color-bone: #f2efe6;
+  --color-ash: #8d8d96;
+  --color-acid: #c8ff00;
+  --color-grape: #8b5cf6;
+  --color-coral: #ff5c39;
+  --color-azure: #4cc9f0;
+
+  --font-display: var(--font-space-grotesk), "Arial Black", sans-serif;
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-void);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-acid);
+  color: #000;
+}
+
+/* --- brutalist primitives -------------------------------------- */
+
+.brute {
+  border: 2px solid var(--color-bone);
+  background: var(--color-panel);
+  box-shadow: 5px 5px 0 0 #000;
+}
+
+.brute-sm {
+  border: 2px solid var(--color-bone);
+  background: var(--color-panel);
+  box-shadow: 3px 3px 0 0 #000;
+}
+
+.brute-acid {
+  border: 2px solid var(--color-bone);
+  background: var(--color-acid);
+  color: #000;
+  box-shadow: 5px 5px 0 0 #000;
+}
+
+.btn-brute {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 2px solid var(--color-bone);
+  background: var(--color-panel);
+  color: var(--color-bone);
+  box-shadow: 4px 4px 0 0 #000;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.7rem 1.25rem;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
+}
+
+.btn-brute:hover {
+  background: var(--color-panel-hi);
+}
+
+.btn-brute:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 0 #000;
+}
+
+.btn-brute:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-acid {
+  background: var(--color-acid);
+  color: #000;
+  border-color: var(--color-bone);
+}
+
+.btn-acid:hover {
+  background: #d9ff4d;
+}
+
+/* --- textures --------------------------------------------------- */
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(242, 239, 230, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 239, 230, 0.055) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.dot-bg {
+  background-image: radial-gradient(rgba(242, 239, 230, 0.14) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(242, 239, 230, 0.12) 0px,
+    rgba(242, 239, 230, 0.12) 2px,
+    transparent 2px,
+    transparent 9px
+  );
+}
+
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--color-bone);
+}
+
+/* --- marquee ----------------------------------------------------- */
+
+@keyframes tick {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: tick 28s linear infinite;
+}
+
+/* --- blink ------------------------------------------------------- */
+
+@keyframes blink {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: 0; }
+}
+
+.caret::after {
+  content: "▌";
+  animation: blink 1s step-end infinite;
+  color: var(--color-acid);
+}
+
+/* --- scrollbars --------------------------------------------------- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a42 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #3a3a42;
+  border: 1px solid var(--color-void);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* --- misc --------------------------------------------------------- */
+
+input[type="range"] {
+  accent-color: var(--color-acid);
+}
+
+@keyframes pop {
+  0% { transform: translateY(6px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.pop {
+  animation: pop 0.18s ease-out both;
 }
