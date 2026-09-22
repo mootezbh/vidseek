@@ -33,7 +33,7 @@ const FEATURES = [
     n: "06",
     accent: "bg-azure",
     title: "No sign-up, no limits",
-    body: "no account needed, nothing counts your scans, and no upgrade to pro popup either.",
+    body: "you don't make an account, nothing counts your scans, and there's no \"upgrade to pro\" popup popping up halfway through.",
   },
 ];
 
