@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VidSeek
 
-## Getting Started
+video search engine that runs **completely in your browser**. you drop a video in, it
+"watches" it (scans the frames + transcribes the speech with whisper) and builds an
+index, then you ask it stuff in the chat like *"where does she say hello?"* and it
+jumps to that exact timestamp.
 
-First, run the development server:
+no server, no api keys, nothing gets uploaded — the file never leaves your machine.
+
+## features
+
+- **speech search** — whisper transcribes everything with timestamps so you can search
+  what was actually SAID, not just what's on screen
+- **visual search** — CLIP embeds frames so scene questions like "find a city at night"
+  work too
+- **chat → timestamp** — results come back as clickable time cards, click one and the
+  player seeks there
+- runs on **WebGPU** if you have it, falls back to WASM otherwise. models get cached by
+  the browser after the first download
+- no signup, no rate limits, its all client side
+
+## design
+
+went for a **dark neo-brutalist** look — thick borders, hard offset shadows, acid green,
+no gradients or blur. its all **tailwind css v4**, i just added a few utility classes in
+`app/globals.css` (`.brute`, `.btn-brute`, `.hatch` etc). no UI kit or component
+library, everything is hand written.
+
+## tech
+
+- next.js 16 + typescript (app router)
+- tailwind css v4 for the design
+- zustand for state
+- `@huggingface/transformers` to run the models right in the browser:
+  - **whisper-tiny** → speech to text with timestamps
+  - **clip-vit-base-patch32** → frames to vectors
+  - **all-MiniLM-L6-v2** (default) or **EmbeddingGemma 2** (settings) → text vectors
+
+## running it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+open http://localhost:3000, go to the studio and drop a video. the first scan downloads
+the models (a few hundred mb, depends which text model you pick) and after that they
+are cached so it doesn't download again.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## how it works (short version)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. the file becomes an object url, it never gets uploaded anywhere
+2. audio track gets decoded → whisper transcribes it → text lines with timestamps
+3. a frame every couple seconds gets embedded with CLIP's vision tower
+4. transcript lines get embedded with the text model
+5. your question gets embedded into both spaces, cosine similarity, top hits become the
+   clickable timestamp cards
 
-## Learn More
+## stuff that doesn't work yet
 
-To learn more about Next.js, take a look at the following resources:
+- it can't tell you WHO said something (no speaker diarization), only what + when
+- videos longer than ~1 hour are slow without WebGPU
+- the index lives in memory so if you reload the tab you have to rescan
+- i'd like to try embeddinggemma's audio encoder for "find a part that sounds like
+  this" but whisper already gives the actual words so idk
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
